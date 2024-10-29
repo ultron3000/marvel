@@ -1,23 +1,47 @@
-<div id="qrCodeContainer" style="text-align: center;">
-    <img src="https://lh6.googleusercontent.com/8TEuqrA2sCnGB3pFiWHNqHmO8oSQ16X9MkMVAHW8LQmMdNbX3H84is1zvEzaap8Cc_HwCoKzALSERGXhpk9b-9Y=w1280" id="qrCode" alt="QR Code" style="max-width: 100%; height: auto;">
-</div>
-<button id="screenshotButton" style="margin-top: 10px;">Take Screenshot</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avengers: Endgame</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<h1>Avengers: Endgame</h1>
+
+<video id="my-video" controls preload="auto"></video>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.1.5/hls.min.js"></script>
 <script>
-    document.getElementById('screenshotButton').onclick = function() {
-        console.log("Screenshot button clicked!");
+    var video = document.getElementById('my-video');
+    var videoSrc = 'https://bronlexsky.live/file1/gbFtj~KVbTvgRnKRId8jUML8EmU+aIV+LVwYVyr9yisO4HvK+x65DVUjDxZGkRgOz5Di4l6K9A4bU0OPIuBmJnQuHYBvXCg~ggZRWCPp5ETissaQ4mF9GgXNi1Q1n91iCdOXAMx~B3M6WNRXl5k6My3tIRnS6Pq3x4OPHV61ag0=/MTA4MA==/aW5kZXgubTN1OA==.m3u8';
 
-        html2canvas(document.getElementById('qrCodeContainer')).then(function(canvas) {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'qr_code_screenshot.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }).catch(function(error) {
-            console.error('Error taking screenshot:', error);
-            alert('Error taking screenshot. Please try again.');
+    if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
         });
-    };
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+        video.addEventListener('loadedmetadata', function() {
+            video.play();
+        });
+    }
 </script>
+
+<a href="index.html">Back to Movie Library</a>
+
+</body>
+</html>
