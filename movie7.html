@@ -1,0 +1,16 @@
+<div id="qrCodeContainer">
+    <img src="https://lh6.googleusercontent.com/9u7K7jiO2zzm5sK0DvcjwnclfuC4VQiuDtBODj2COYKc6MJFnDDY51k892O3sqK6IqGaFSduCIAZcaAoRsbJmbg=w1280" id="qrCode" alt="QR Code" style="max-width: 100%; height: auto;">
+</div>
+<button id="screenshotButton">Take Screenshot</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script>
+    document.getElementById('screenshotButton').onclick = function() {
+        html2canvas(document.getElementById('qrCodeContainer')).then(function(canvas) {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'qr_code_screenshot.png';
+            link.click();
+        });
+    };
+</script>
