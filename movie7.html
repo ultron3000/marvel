@@ -1,16 +1,23 @@
-<div id="qrCodeContainer">
-    <img src="https://lh6.googleusercontent.com/9u7K7jiO2zzm5sK0DvcjwnclfuC4VQiuDtBODj2COYKc6MJFnDDY51k892O3sqK6IqGaFSduCIAZcaAoRsbJmbg=w1280" id="qrCode" alt="QR Code" style="max-width: 100%; height: auto;">
+<div id="qrCodeContainer" style="text-align: center;">
+    <img src="https://lh6.googleusercontent.com/8TEuqrA2sCnGB3pFiWHNqHmO8oSQ16X9MkMVAHW8LQmMdNbX3H84is1zvEzaap8Cc_HwCoKzALSERGXhpk9b-9Y=w1280" id="qrCode" alt="QR Code" style="max-width: 100%; height: auto;">
 </div>
-<button id="screenshotButton">Take Screenshot</button>
+<button id="screenshotButton" style="margin-top: 10px;">Take Screenshot</button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
     document.getElementById('screenshotButton').onclick = function() {
+        console.log("Screenshot button clicked!");
+
         html2canvas(document.getElementById('qrCodeContainer')).then(function(canvas) {
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
             link.download = 'qr_code_screenshot.png';
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+        }).catch(function(error) {
+            console.error('Error taking screenshot:', error);
+            alert('Error taking screenshot. Please try again.');
         });
     };
 </script>
