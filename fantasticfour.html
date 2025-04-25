@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fantastic Four (2005)</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    video {
+      width: 100%;
+      max-width: 900px;
+      border: 3px solid #00aaff;
+      border-radius: 10px;
+      background: black;
+    }
+    .back-button {
+      margin-top: 20px;
+      background-color: #00aaff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      text-decoration: none;
+    }
+    .back-button:hover {
+      background-color: #0077cc;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+  <h1>Fantastic Four (2005)</h1>
+  <video id="video" controls autoplay>
+    <source src="https://skra.disalvozunigam.sbs:443/v4/db/9zljn/index-f1-v1-a1.txt" type="application/x-mpegURL">
+  </video>
+  <br><a href="index.html" class="back-button">⬅ Back to Marvel Collection</a>
+
+  <script>
+    const video = document.getElementById('video');
+    const videoSrc = "https://skra.disalvozunigam.sbs:443/v4/db/9zljn/index-f1-v1-a1.txt";
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+    } else {
+      console.error("Your browser does not support HLS streaming.");
+    }
+  </script>
+</body>
+</html>
