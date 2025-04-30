@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Movie Player</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       background: black;
@@ -15,7 +15,6 @@
     }
     h1 {
       margin-bottom: 20px;
-      font-size: 2em;
     }
     video {
       width: 90%;
@@ -57,9 +56,6 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    .caption-button:hover {
-      background: #e6b800;
-    }
     a {
       display: inline-block;
       margin-top: 20px;
@@ -67,9 +63,6 @@
       font-weight: bold;
       text-decoration: none;
       font-size: 1.2em;
-    }
-    a:hover {
-      text-decoration: underline;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -84,124 +77,105 @@
 <div id="loading-text">Loading movie...</div>
 
 <h1 id="movie-title">Loading...</h1>
-
 <video id="video" controls autoplay crossorigin="anonymous"></video>
 
-<br>
+<br />
 <button class="caption-button" id="toggle-captions">Toggle Subtitles</button>
-<br><br>
-
+<br /><br />
 <a href="index.html">← Back to Movies</a>
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const title = params.get('title');
-const videoUrl = params.get('video');
-const subtitleUrl = params.get('subtitle');
-const currentIndex = parseInt(params.get('index'), 10);
+const title = params.get("title");
+const videoUrl = params.get("video");
+const subtitleUrl = params.get("subtitle");
+const index = parseInt(params.get("index"), 10);
 
-const movieTitle = document.getElementById('movie-title');
-const videoPlayer = document.getElementById('video');
-const spinner = document.getElementById('loading-spinner');
-const loadingText = document.getElementById('loading-text');
-const toggleCaptionsBtn = document.getElementById('toggle-captions');
+const movieTitle = document.getElementById("movie-title");
+const video = document.getElementById("video");
+const spinner = document.getElementById("loading-spinner");
+const loadingText = document.getElementById("loading-text");
+const toggleBtn = document.getElementById("toggle-captions");
 
 const saveKey = `continue-${title}`;
 movieTitle.textContent = title;
 showSpinner();
 
 function showSpinner() {
-  spinner.style.display = 'block';
-  loadingText.style.display = 'block';
+  spinner.style.display = "block";
+  loadingText.style.display = "block";
 }
 function hideSpinner() {
-  spinner.style.display = 'none';
-  loadingText.style.display = 'none';
+  spinner.style.display = "none";
+  loadingText.style.display = "none";
 }
 
-if (Hls.isSupported()) {
-  const hls = new Hls();
-  hls.loadSource(videoUrl);
-  hls.attachMedia(videoPlayer);
-  hls.on(Hls.Events.MANIFEST_PARSED, function() {
-    videoPlayer.play();
-    hideSpinner();
-    const lastTime = localStorage.getItem(saveKey);
-    if (lastTime) {
-      videoPlayer.currentTime = parseFloat(lastTime);
-    }
-  });
-} else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-  videoPlayer.src = videoUrl;
-  videoPlayer.addEventListener('loadedmetadata', () => {
-    videoPlayer.play();
-    hideSpinner();
-    const lastTime = localStorage.getItem(saveKey);
-    if (lastTime) {
-      videoPlayer.currentTime = parseFloat(lastTime);
-    }
-  });
-} else {
-  alert(\"Your browser doesn't support HLS!\");
-  window.location.href = \"index.html\";
+function playVideo(url) {
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play();
+      hideSpinner();
+      const lastTime = localStorage.getItem(saveKey);
+      if (lastTime) video.currentTime = parseFloat(lastTime);
+    });
+    hls.on(Hls.Events.ERROR, (event, data) => {
+      alert("Playback error: " + data.details);
+    });
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = url;
+    video.addEventListener("loadedmetadata", () => {
+      video.play();
+      hideSpinner();
+      const lastTime = localStorage.getItem(saveKey);
+      if (lastTime) video.currentTime = parseFloat(lastTime);
+    });
+  } else {
+    alert("Your browser doesn't support HLS!");
+    window.location.href = "index.html";
+  }
 }
 
-// Add subtitles if available
+playVideo(videoUrl);
+
 if (subtitleUrl) {
-  const track = document.createElement('track');
-  track.kind = 'subtitles';
-  track.label = 'English';
-  track.srclang = 'en';
+  const track = document.createElement("track");
+  track.kind = "subtitles";
+  track.label = "English";
+  track.srclang = "en";
   track.src = subtitleUrl;
   track.default = true;
-  videoPlayer.appendChild(track);
+  video.appendChild(track);
 }
 
-// Save progress every 5 seconds
 setInterval(() => {
-  if (!isNaN(videoPlayer.currentTime)) {
-    localStorage.setItem(saveKey, videoPlayer.currentTime);
+  if (!isNaN(video.currentTime)) {
+    localStorage.setItem(saveKey, video.currentTime);
   }
 }, 5000);
 
-// Save progress on page exit
-window.addEventListener('beforeunload', () => {
-  if (!isNaN(videoPlayer.currentTime)) {
-    localStorage.setItem(saveKey, videoPlayer.currentTime);
+window.addEventListener("beforeunload", () => {
+  if (!isNaN(video.currentTime)) {
+    localStorage.setItem(saveKey, video.currentTime);
   }
 });
 
-// Toggle captions
-toggleCaptionsBtn.addEventListener('click', () => {
-  for (const track of videoPlayer.textTracks) {
-    track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
+toggleBtn.addEventListener("click", () => {
+  for (const track of video.textTracks) {
+    track.mode = track.mode === "showing" ? "hidden" : "showing";
   }
 });
 
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-  if (e.code === 'ArrowRight') videoPlayer.currentTime += 10;
-  else if (e.code === 'ArrowLeft') videoPlayer.currentTime -= 10;
-  else if (e.code === 'Space') {
+document.addEventListener("keydown", (e) => {
+  if (e.code === "ArrowRight") video.currentTime += 10;
+  else if (e.code === "ArrowLeft") video.currentTime -= 10;
+  else if (e.code === "Space") {
     e.preventDefault();
-    videoPlayer.paused ? videoPlayer.play() : videoPlayer.pause();
-  }
-});
-
-// Auto play next movie (only if navigated from index.html with index)
-videoPlayer.addEventListener('ended', () => {
-  const nextIndex = currentIndex + 1;
-  const baseUrl = new URL(window.location.href);
-  const origin = baseUrl.origin + baseUrl.pathname;
-  const nextLink = document.querySelectorAll('.movie')[nextIndex];
-  if (nextLink) {
-    // This assumes index.html passes `index` in order
-    window.location.href = `player.html?title=Movie ${nextIndex + 1}&video=${encodeURIComponent(videoUrl)}&index=${nextIndex}`;
-  } else {
-    window.location.href = \"index.html\";
+    video.paused ? video.play() : video.pause();
   }
 });
 </script>
-
 </body>
 </html>
