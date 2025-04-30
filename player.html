@@ -121,9 +121,14 @@ function playVideo(url) {
       const lastTime = localStorage.getItem(saveKey);
       if (lastTime) video.currentTime = parseFloat(lastTime);
     });
-    hls.on(Hls.Events.ERROR, (event, data) => {
-      alert("Playback error: " + data.details);
-    });
+    hls.on(Hls.Events.ERROR, function (event, data) {
+  if (data.fatal) {
+    alert("A fatal playback error occurred: " + data.details);
+  } else {
+    console.warn("Non-fatal HLS error:", data.details);
+  }
+});
+
   } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = url;
     video.addEventListener("loadedmetadata", () => {
