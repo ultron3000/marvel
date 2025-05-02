@@ -50,10 +50,15 @@
   
     @media (max-width: 600px) {
       .movies {
-        justify-content: space-around;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
       }
       .movie {
-        width: 45%;
+        width: 100%;
+      }
+      .movie img {
+        height: auto;
       }
     }
 
