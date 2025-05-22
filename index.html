@@ -134,6 +134,24 @@ movies.forEach((movie, index) => {
   };
   container.appendChild(div);
 });
+
+// Live Search Filter
+
+document.getElementById('searchBar').addEventListener('input', function () {
+
+  const searchTerm = this.value.toLowerCase();
+
+  const movieDivs = document.querySelectorAll('.movie');
+
+  movieDivs.forEach(div => {
+
+    const title = div.querySelector('.movie-title').textContent.toLowerCase();
+
+    div.style.display = title.includes(searchTerm) ? 'block' : 'none';
+
+  });
+
+});  
 </script>
 
 </body>
