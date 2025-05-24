@@ -12,17 +12,29 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
     .loading-spinner {
       animation: spin 1s linear infinite;
     }
     .video-container {
       position: relative;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      padding-bottom: 56.25%;
       height: 0;
       overflow: hidden;
       background: #000;
       border-radius: 0.75rem;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+    .video-container:hover {
+      box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.3);
     }
     .video-container video {
       position: absolute;
@@ -30,53 +42,119 @@
       left: 0;
       width: 100%;
       height: 100%;
+      object-fit: cover;
     }
     .controls-container {
-      transition: opacity 0.3s ease;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.3s ease;
     }
     .progress-container {
-      height: 5px;
-      background: rgba(255, 255, 255, 0.2);
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
       cursor: pointer;
+      border-radius: 3px;
+      overflow: hidden;
     }
     .progress-bar {
       height: 100%;
-      background: #f59e0b;
+      background: linear-gradient(90deg, #f59e0b, #f97316);
       transition: width 0.1s;
+      position: relative;
+    }
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      background: white;
+      border-radius: 50%;
+      transform: translateX(50%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .progress-container:hover .progress-bar::after {
+      opacity: 1;
     }
     .volume-container {
       width: 0;
-      transition: width 0.2s ease;
+      transition: all 0.3s ease;
       overflow: hidden;
     }
     .volume-container.active {
       width: 100px;
     }
     .settings-menu {
-      transform: translateY(20px);
+      transform: translateY(10px);
       opacity: 0;
       transition: all 0.2s ease;
       pointer-events: none;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
     .settings-menu.active {
       transform: translateY(0);
       opacity: 1;
       pointer-events: all;
     }
-    .quality-option:hover, .speed-option:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    .subtitle-option:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+    .quality-option:hover, .speed-option:hover, .subtitle-option:hover {
+      background-color: rgba(245, 158, 11, 0.2);
     }
     .tooltip {
       visibility: hidden;
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: all 0.3s;
+      background: rgba(0, 0, 0, 0.8);
     }
     .tooltip-parent:hover .tooltip {
       visibility: visible;
       opacity: 1;
+    }
+    .buffering-indicator {
+      display: none;
+      animation: pulse 1.5s infinite;
+    }
+    .video-container.buffering .buffering-indicator {
+      display: block;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #f59e0b;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #f97316;
+    }
+    .active-control {
+      color: #f59e0b !important;
+    }
+    .cinema-mode {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      padding: 0;
+      border-radius: 0;
+      max-width: 100%;
+    }
+    .cinema-mode .video-container {
+      padding-bottom: 0;
+      height: 100%;
+      border-radius: 0;
     }
     @media (max-width: 768px) {
       .controls-container {
@@ -99,23 +177,39 @@
   <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50">
     <div class="loading-spinner w-16 h-16 border-4 border-gray-200 border-t-amber-400 rounded-full mb-4"></div>
     <p id="loading-text" class="text-xl font-semibold text-amber-400">Loading movie...</p>
-    <p id="loading-details" class="text-gray-400 mt-2">Please wait while we prepare your viewing experience</p>
+    <p id="loading-details" class="text-gray-400 mt-2">Preparing your premium viewing experience</p>
+    <div class="w-64 h-1 bg-gray-800 rounded-full mt-4 overflow-hidden">
+      <div id="loading-progress" class="h-full bg-amber-400 rounded-full" style="width: 0%"></div>
+    </div>
   </div>
 
   <!-- Main Content -->
-  <div class="w-full max-w-6xl">
+  <div class="w-full max-w-6xl relative">
     <!-- Header -->
     <div class="flex justify-between items-center mb-4 md:mb-6">
-      <h1 id="movie-title" class="text-2xl md:text-3xl font-bold text-amber-400 truncate max-w-xs md:max-w-md">Movie Title</h1>
-      <a href="index.html" class="flex items-center text-gray-300 hover:text-amber-400 transition">
-        <i class="fas fa-arrow-left mr-2"></i>
-        <span class="hidden md:inline">Back to Movies</span>
-      </a>
+      <div class="flex items-center space-x-4">
+        <h1 id="movie-title" class="text-2xl md:text-3xl font-bold text-amber-400 truncate max-w-xs md:max-w-md">Movie Title</h1>
+        <button id="cinema-btn" class="hidden md:flex items-center text-gray-300 hover:text-amber-400 transition">
+          <i class="fas fa-expand mr-1"></i>
+          <span class="text-sm">Cinema Mode</span>
+        </button>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="back-btn" class="flex items-center text-gray-300 hover:text-amber-400 transition">
+          <i class="fas fa-arrow-left mr-2"></i>
+          <span class="hidden md:inline">Back to Movies</span>
+        </button>
+      </div>
     </div>
 
     <!-- Video Player -->
     <div class="video-container group" id="video-container">
-      <video id="video" class="w-full" crossorigin="anonymous"></video>
+      <video id="video" class="w-full" crossorigin="anonymous" autoplay></video>
+      
+      <!-- Buffering Indicator -->
+      <div class="buffering-indicator absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 z-10">
+        <div class="loading-spinner w-12 h-12 border-4 border-gray-200 border-t-amber-400 rounded-full"></div>
+      </div>
       
       <!-- Custom Controls -->
       <div id="controls-container" class="controls-container absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 opacity-0 group-hover:opacity-100">
@@ -129,7 +223,7 @@
           <!-- Left Controls -->
           <div class="flex items-center space-x-2 md:space-x-4">
             <button id="play-pause" class="control-btn text-white hover:text-amber-400 transition">
-              <i class="fas fa-play text-xl"></i>
+              <i class="fas fa-pause text-xl"></i>
             </button>
             <button id="rewind" class="control-btn text-white hover:text-amber-400 transition tooltip-parent">
               <i class="fas fa-backward text-lg"></i>
@@ -218,67 +312,91 @@
     <!-- Additional Info -->
     <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Playback Info -->
-      <div class="bg-gray-800 p-4 rounded-lg">
-        <h3 class="text-lg font-semibold text-amber-400 mb-2">Playback Information</h3>
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-gray-400">Current Position:</span>
-            <span id="current-position" class="font-medium">00:00</span>
+      <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+        <h3 class="text-lg font-semibold text-amber-400 mb-2 flex items-center">
+          <i class="fas fa-info-circle mr-2"></i> Playback Information
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-clock mr-2"></i> Current Position:
+            </span>
+            <span id="current-position" class="font-medium bg-gray-700 px-2 py-1 rounded">00:00</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Remaining Time:</span>
-            <span id="remaining-time" class="font-medium">00:00</span>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-hourglass-half mr-2"></i> Remaining Time:
+            </span>
+            <span id="remaining-time" class="font-medium bg-gray-700 px-2 py-1 rounded">00:00</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Playback Speed:</span>
-            <span id="current-speed" class="font-medium">1x</span>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-tachometer-alt mr-2"></i> Playback Speed:
+            </span>
+            <span id="current-speed" class="font-medium bg-gray-700 px-2 py-1 rounded">1x</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Quality:</span>
-            <span id="current-quality" class="font-medium">Auto</span>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-hd mr-2"></i> Quality:
+            </span>
+            <span id="current-quality" class="font-medium bg-gray-700 px-2 py-1 rounded">Auto</span>
           </div>
         </div>
       </div>
       
       <!-- Shortcuts -->
-      <div class="bg-gray-800 p-4 rounded-lg">
-        <h3 class="text-lg font-semibold text-amber-400 mb-2">Keyboard Shortcuts</h3>
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-gray-400">Space:</span>
-            <span class="font-medium">Play/Pause</span>
+      <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+        <h3 class="text-lg font-semibold text-amber-400 mb-2 flex items-center">
+          <i class="fas fa-keyboard mr-2"></i> Keyboard Shortcuts
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-space-shuttle mr-2"></i> Space:
+            </span>
+            <span class="font-medium bg-gray-700 px-2 py-1 rounded">Play/Pause</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Arrow Left/Right:</span>
-            <span class="font-medium">Seek ±10s</span>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-arrows-alt-h mr-2"></i> Arrow Left/Right:
+            </span>
+            <span class="font-medium bg-gray-700 px-2 py-1 rounded">Seek ±10s</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Arrow Up/Down:</span>
-            <span class="font-medium">Volume ±10%</span>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-arrows-alt-v mr-2"></i> Arrow Up/Down:
+            </span>
+            <span class="font-medium bg-gray-700 px-2 py-1 rounded">Volume ±10%</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">F:</span>
-            <span class="font-medium">Fullscreen</span>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-expand mr-2"></i> F:
+            </span>
+            <span class="font-medium bg-gray-700 px-2 py-1 rounded">Fullscreen</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">M:</span>
-            <span class="font-medium">Mute</span>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400 flex items-center">
+              <i class="fas fa-volume-mute mr-2"></i> M:
+            </span>
+            <span class="font-medium bg-gray-700 px-2 py-1 rounded">Mute</span>
           </div>
         </div>
       </div>
       
       <!-- Resume Options -->
-      <div class="bg-gray-800 p-4 rounded-lg">
-        <h3 class="text-lg font-semibold text-amber-400 mb-2">Resume Options</h3>
+      <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+        <h3 class="text-lg font-semibold text-amber-400 mb-2 flex items-center">
+          <i class="fas fa-bookmark mr-2"></i> Resume Options
+        </h3>
         <div class="space-y-3">
-          <button id="resume-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium py-2 px-4 rounded transition">
+          <button id="resume-btn" class="w-full flex items-center justify-center bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-medium py-2 px-4 rounded transition transform hover:scale-[1.02]">
             <i class="fas fa-play-circle mr-2"></i> Resume from last position
           </button>
-          <button id="restart-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition">
+          <button id="restart-btn" class="w-full flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition transform hover:scale-[1.02]">
             <i class="fas fa-redo mr-2"></i> Restart from beginning
           </button>
-          <div class="text-xs text-gray-400 mt-2">
-            Your progress is automatically saved every 10 seconds.
+          <div class="text-xs text-gray-400 mt-2 flex items-center">
+            <i class="fas fa-save mr-2"></i> Your progress is automatically saved every 10 seconds.
           </div>
         </div>
       </div>
@@ -288,15 +406,16 @@
   <script>
     // Get URL parameters
     const params = new URLSearchParams(window.location.search);
-    const title = params.get('title');
-    const videoUrl = params.get('video');
+    const title = params.get('title') || 'Premium Movie';
+    const videoUrl = params.get('video') || 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
     const subtitleUrl = params.get('subtitle');
-    const saveKey = `continue-${title}`;
+    const saveKey = `continue-${title.replace(/\s+/g, '-').toLowerCase()}`;
 
     // DOM Elements
     const video = document.getElementById('video');
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
+    const loadingProgress = document.getElementById('loading-progress');
     const movieTitle = document.getElementById('movie-title');
     const videoContainer = document.getElementById('video-container');
     const controlsContainer = document.getElementById('controls-container');
@@ -322,18 +441,24 @@
     const qualityBtn = document.getElementById('quality-btn');
     const qualityMenu = document.getElementById('quality-menu');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const cinemaBtn = document.getElementById('cinema-btn');
+    const backBtn = document.getElementById('back-btn');
     const resumeBtn = document.getElementById('resume-btn');
     const restartBtn = document.getElementById('restart-btn');
+    const bufferingIndicator = document.querySelector('.buffering-indicator');
 
     // State variables
     let isDraggingProgress = false;
     let hls;
     let lastVolume = 1;
     let isSettingsMenuOpen = false;
+    let isCinemaMode = false;
+    let progressInterval;
+    let lastUpdateTime = 0;
 
     // Initialize player
     function initPlayer() {
-      movieTitle.textContent = title || 'Movie Player';
+      movieTitle.textContent = title;
       
       // Set up event listeners
       setupEventListeners();
@@ -354,6 +479,8 @@
       video.addEventListener('dblclick', toggleFullscreen);
       video.addEventListener('webkitbeginfullscreen', () => document.body.classList.add('fullscreen'));
       video.addEventListener('webkitendfullscreen', () => document.body.classList.remove('fullscreen'));
+      video.addEventListener('waiting', showBuffering);
+      video.addEventListener('playing', hideBuffering);
       
       // Control buttons
       playPauseBtn.addEventListener('click', togglePlayPause);
@@ -363,6 +490,8 @@
       volumeSlider.addEventListener('input', updateVolume);
       mobileVolumeSlider.addEventListener('input', updateVolume);
       fullscreenBtn.addEventListener('click', toggleFullscreen);
+      cinemaBtn.addEventListener('click', toggleCinemaMode);
+      backBtn.addEventListener('click', () => window.location.href = 'index.html');
       resumeBtn.addEventListener('click', resumeFromLastPosition);
       restartBtn.addEventListener('click', restartFromBeginning);
       
@@ -473,6 +602,14 @@
     function loadVideo() {
       showLoading('Loading video...');
       
+      // Simulate loading progress
+      let progress = 0;
+      progressInterval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress >= 90) clearInterval(progressInterval);
+        loadingProgress.style.width = `${progress}%`;
+      }, 200);
+      
       if (Hls.isSupported()) {
         hls = new Hls({
           maxBufferLength: 30,
@@ -488,6 +625,9 @@
         hls.attachMedia(video);
         
         hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+          clearInterval(progressInterval);
+          loadingProgress.style.width = '100%';
+          
           // Populate quality menu
           const qualityMenu = document.getElementById('quality-menu');
           qualityMenu.innerHTML = `
@@ -552,18 +692,27 @@
             });
           }
           
-          hideLoading();
-          video.play();
-          
-          // Check for saved position
-          const lastTime = localStorage.getItem(saveKey);
-          if (lastTime) {
-            video.currentTime = parseFloat(lastTime);
-          }
+          setTimeout(() => {
+            hideLoading();
+            
+            // Check for saved position
+            const lastTime = localStorage.getItem(saveKey);
+            if (lastTime) {
+              video.currentTime = parseFloat(lastTime);
+            }
+            
+            // Auto-play the video
+            video.play().catch(e => {
+              console.error('Auto-play failed:', e);
+              // Show play button if auto-play fails
+              playPauseBtn.querySelector('i').classList.replace('fa-pause', 'fa-play');
+            });
+          }, 500);
         });
         
         hls.on(Hls.Events.ERROR, (event, data) => {
           if (data.fatal) {
+            clearInterval(progressInterval);
             switch(data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
                 showLoading('Network error. Trying to recover...');
@@ -583,14 +732,25 @@
         // Native HLS support (Safari)
         video.src = videoUrl;
         video.addEventListener('loadedmetadata', () => {
-          hideLoading();
-          video.play();
+          clearInterval(progressInterval);
+          loadingProgress.style.width = '100%';
           
-          // Check for saved position
-          const lastTime = localStorage.getItem(saveKey);
-          if (lastTime) {
-            video.currentTime = parseFloat(lastTime);
-          }
+          setTimeout(() => {
+            hideLoading();
+            
+            // Check for saved position
+            const lastTime = localStorage.getItem(saveKey);
+            if (lastTime) {
+              video.currentTime = parseFloat(lastTime);
+            }
+            
+            // Auto-play the video
+            video.play().catch(e => {
+              console.error('Auto-play failed:', e);
+              // Show play button if auto-play fails
+              playPauseBtn.querySelector('i').classList.replace('fa-pause', 'fa-play');
+            });
+          }, 500);
         });
         
         // Load subtitle if provided
@@ -622,10 +782,22 @@
       loadingOverlay.style.display = 'none';
     }
 
+    // Show buffering indicator
+    function showBuffering() {
+      videoContainer.classList.add('buffering');
+    }
+
+    // Hide buffering indicator
+    function hideBuffering() {
+      videoContainer.classList.remove('buffering');
+    }
+
     // Toggle play/pause
     function togglePlayPause() {
       if (video.paused) {
-        video.play();
+        video.play().catch(e => {
+          console.error('Play failed:', e);
+        });
       } else {
         video.pause();
       }
@@ -694,6 +866,20 @@
       }
     }
 
+    // Toggle cinema mode
+    function toggleCinemaMode() {
+      const mainContainer = document.querySelector('.w-full.max-w-6xl');
+      isCinemaMode = !isCinemaMode;
+      
+      if (isCinemaMode) {
+        mainContainer.classList.add('cinema-mode');
+        cinemaBtn.innerHTML = '<i class="fas fa-compress mr-1"></i><span class="text-sm">Exit Cinema</span>';
+      } else {
+        mainContainer.classList.remove('cinema-mode');
+        cinemaBtn.innerHTML = '<i class="fas fa-expand mr-1"></i><span class="text-sm">Cinema Mode</span>';
+      }
+    }
+
     // Toggle settings menu
     function toggleMenu(menu) {
       isSettingsMenuOpen = !menu.classList.contains('active');
@@ -711,6 +897,10 @@
 
     // Update progress bar
     function updateProgress() {
+      const now = Date.now();
+      if (now - lastUpdateTime < 200 && !isDraggingProgress) return; // Throttle updates
+      lastUpdateTime = now;
+      
       if (!isDraggingProgress) {
         const progress = (video.currentTime / video.duration) * 100;
         progressBar.style.width = `${progress}%`;
@@ -736,6 +926,8 @@
 
     // Format time (seconds to HH:MM:SS)
     function formatTime(seconds) {
+      if (isNaN(seconds)) return '00:00';
+      
       const h = Math.floor(seconds / 3600);
       const m = Math.floor((seconds % 3600) / 60);
       const s = Math.floor(seconds % 60);
@@ -779,18 +971,25 @@
       if (lastTime) {
         video.currentTime = parseFloat(lastTime);
       }
-      video.play();
+      video.play().catch(e => {
+        console.error('Play failed:', e);
+      });
     }
 
     // Restart from beginning
     function restartFromBeginning() {
       video.currentTime = 0;
       localStorage.removeItem(saveKey);
-      video.play();
+      video.play().catch(e => {
+        console.error('Play failed:', e);
+      });
     }
 
     // Handle keyboard shortcuts
     function handleKeyboardShortcuts(e) {
+      // Don't trigger shortcuts when typing in inputs
+      if (e.target.tagName === 'INPUT') return;
+      
       switch(e.key) {
         case ' ':
           e.preventDefault();
@@ -825,6 +1024,10 @@
         case 'm':
         case 'M':
           toggleMute();
+          break;
+        case 'c':
+        case 'C':
+          if (cinemaBtn) toggleCinemaMode();
           break;
       }
     }
