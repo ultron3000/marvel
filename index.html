@@ -787,8 +787,12 @@
       `;
       
       card.addEventListener('click', () => {
-        const url = `player.html?title=${encodeURIComponent(movie.title)}&video=${encodeURIComponent(movie.video)}`;
-        window.location.href = url;
+        if (isStream(movie.video)) {
+          const url = `player.html?title=${encodeURIComponent(movie.title)}&video=${encodeURIComponent(movie.video)}`;
+          window.location.href = url;
+        } else {
+          openModal(movie);
+        }
       });
       
       return card;
