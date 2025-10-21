@@ -337,7 +337,7 @@
       },
       { 
         title: "Black Widow", 
-        video: "https://sg1.shegu.net/vip/p1/movie_mp4_h264/2021/3/0/38350/movie.38350.2021.720p.H264.20210709054835.mp4?KEY1=sTNwBzYziJ-Bgz_X189yvw&KEY2=1761026217&KEY3=1082220&KEY4=world&KEY7=febbox_video_quality_list_v3&KEY8=1082220", 
+        video: "https://sskt.seawrightqrg.sbs/v4/ty/bpoba/index-f1-v1-a1.txt", 
         image: "https://preview.redd.it/4vh7dnpge7i71.jpg?width=1080&crop=smart&auto=webp&s=1767470d5dd70fa722f9e9e7ab3199530b3b030e",
         phase: "phase4",
         year: 2021,
@@ -913,324 +913,27 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 
-<!-- Modal Player -->
-    <div id="playerModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
-        <div class="w-full max-w-4xl relative">
-            <button id="closeModal" class="absolute -top-10 right-0 text-2xl text-yellow-400 hover:text-yellow-300">
-                <i class="fas fa-times"></i>
-            </button>
-            <video id="modalVideo" controls class="w-full aspect-video bg-black">
-                Your browser does not support the video tag.
-            </video>
-            <div id="qualityControls" class="flex justify-center mt-2"></div>
-            <div id="playerError" class="hidden bg-red-900 text-white p-2 rounded mt-2 text-center"></div>
-            
-            <div class="flex justify-between mt-2">
-                <button onclick="playPreviousVideo()" class="px-3 py-1 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700">
-                    <i class="fas fa-step-backward mr-1"></i> Prev
-                </button>
-                <button onclick="toggleFullscreen()" class="px-3 py-1 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700">
-                    <i class="fas fa-expand mr-1"></i> Fullscreen
-                </button>
-                <button onclick="playNextVideo()" class="px-3 py-1 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700">
-                    Next <i class="fas fa-step-forward ml-1"></i>
-                </button>
+  <!-- Modal Player -->
+  <div id="playback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90">
+    <div class="relative w-full max-w-4xl bg-gray-900 rounded-xl overflow-hidden">
+      <button id="close-modal" class="absolute top-4 right-4 z-50 text-white hover:text-yellow-500 text-2xl transition">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="aspect-w-16 aspect-h-9">
+        <video id="modal-video" class="w-full" controls></video>
+      </div>
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 id="modal-title" class="text-2xl font-bold mb-1"></h3>
+            <div class="text-gray-400 text-sm">
+              <span><span id="modal-year"></span></span> • <span class="text-yellow-500">★ <span id="modal-rating"></span></span>
             </div>
-            
-            <h3 id="modalTitle" class="text-xl font-bold text-yellow-400 mt-2"></h3>
-            <div class="text-center text-gray-400 text-sm mt-1">
-                Keyboard shortcuts: Space=Play/Pause, Arrows=Seek, F=Fullscreen, N=Next, P=Previous, M=Mute
-            </div>
+          </div>
         </div>
+      </div>
     </div>
-// Play video in modal or external player
-        function playVideo(title, videoUrl, index) {
-            if (videoUrl.includes('.mp4')) {
-                const modal = document.getElementById('playerModal');
-                const video = document.getElementById('modalVideo');
-                const titleElement = document.getElementById('modalTitle');
-                const qualityControls = document.getElementById('qualityControls');
-                
-                // Show quality options if multiple sources available
-                if (typeof videoUrl === 'object') {
-                    qualityControls.innerHTML = Object.entries(videoUrl).map(([quality, url]) => 
-                        `<button class="quality-btn px-3 py-1 mx-1 rounded bg-gray-700 hover:bg-gray-600" 
-                                data-quality="${quality}" data-url="${url}">
-                            ${quality.toUpperCase()}
-                        </button>`
-                    ).join('');
-                } else {
-                    qualityControls.innerHTML = '';
-                }
-                
-                titleElement.textContent = title;
-                video.src = typeof videoUrl === 'object' ? videoUrl.high || videoUrl.medium || videoUrl.low : videoUrl;
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
-                
-                video.addEventListener('error', () => {
-                    showError("Failed to load video. Please try a different quality or movie.");
-                });
-                
-                video.play().catch(e => {
-                    showError("Autoplay blocked. Please click play manually.");
-                });
-                
-                // Store current video info for next/prev navigation
-                currentVideo = { title, videoUrl, index };
-            } else {
-                const url = `player.html?title=${encodeURIComponent(title)}&video=${encodeURIComponent(videoUrl)}&index=${index}`;
-                window.location.href = url;
-            }
-        }
-        
-        function showError(message) {
-            const errorElement = document.getElementById('playerError');
-            errorElement.textContent = message;
-            errorElement.classList.remove('hidden');
-            setTimeout(() => errorElement.classList.add('hidden'), 5000);
-        }
-        
-        // Initialize
-        function init() {
-            renderMovies();
-            setupEventListeners();
-        }
-        
-        // Setup event listeners
-        function setupEventListeners() {
-            // Category filter
-            categoryButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    currentCategory = button.dataset.category;
-                    updateActiveCategoryButton();
-                    renderMovies();
-                });
-            });
-            
-            // Search
-            searchBar.addEventListener('input', () => {
-                renderMovies();
-            });
-            
-            // Theme toggle
-            themeToggle.addEventListener('click', toggleTheme);
-            
-            // Sort toggle
-            sortToggle.addEventListener('click', toggleSort);
-            
-            // Modal controls
-            document.getElementById('closeModal').addEventListener('click', closeModal);
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                const modal = document.getElementById('playerModal');
-                if (!modal.classList.contains('hidden')) {
-                    switch (e.key) {
-                        case 'Escape': closeModal(); break;
-                        case ' ': 
-                            e.preventDefault();
-                            togglePlayPause();
-                            break;
-                        case 'ArrowRight': seekVideo(10); break;
-                        case 'ArrowLeft': seekVideo(-10); break;
-                        case 'f': toggleFullscreen(); break;
-                        case 'm': toggleMute(); break;
-                        case 'n': playNextVideo(); break;
-                        case 'p': playPreviousVideo(); break;
-                    }
-                }
-            });
-            
-            // Quality selection
-            document.getElementById('qualityControls').addEventListener('click', (e) => {
-                if (e.target.classList.contains('quality-btn')) {
-                    const video = document.getElementById('modalVideo');
-                    const currentTime = video.currentTime;
-                    video.src = e.target.dataset.url;
-                    video.currentTime = currentTime;
-                    video.play().catch(e => showError("Please click play manually"));
-                }
-            });
-        }
-        
-        function closeModal() {
-            const modal = document.getElementById('playerModal');
-            const video = document.getElementById('modalVideo');
-            
-            video.pause();
-            video.src = '';
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function togglePlayPause() {
-            const video = document.getElementById('modalVideo');
-            video.paused ? video.play() : video.pause();
-        }
-        
-        function seekVideo(seconds) {
-            const video = document.getElementById('modalVideo');
-            video.currentTime += seconds;
-        }
-        
-        function toggleFullscreen() {
-            const video = document.getElementById('modalVideo');
-            if (!document.fullscreenElement) {
-                video.requestFullscreen().catch(err => {
-                    showError("Fullscreen failed: " + err.message);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
-        
-        function toggleMute() {
-            const video = document.getElementById('modalVideo');
-            video.muted = !video.muted;
-        }
-        
-        function playNextVideo() {
-            const filteredMovies = getFilteredMovies();
-            if (currentVideo && currentVideo.index < filteredMovies.length - 1) {
-                const nextMovie = filteredMovies[currentVideo.index + 1];
-                playVideo(nextMovie.title, nextMovie.video, currentVideo.index + 1);
-            }
-        }
-        
-        function playPreviousVideo() {
-            const filteredMovies = getFilteredMovies();
-            if (currentVideo && currentVideo.index > 0) {
-                const prevMovie = filteredMovies[currentVideo.index - 1];
-                playVideo(prevMovie.title, prevMovie.video, currentVideo.index - 1);
-            }
-        }
-        
-        // Update active category button
-        function updateActiveCategoryButton() {
-            categoryButtons.forEach(button => {
-                if (button.dataset.category === currentCategory) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            });
-        }
-        
-        // Toggle between dark and light theme
-        function toggleTheme() {
-            isDarkMode = !isDarkMode;
-            
-            if (isDarkMode) {
-                document.body.classList.remove('bg-gray-100', 'text-gray-900');
-                document.body.classList.add('bg-black', 'text-gray-100');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            } else {
-                document.body.classList.remove('bg-black', 'text-gray-100');
-                document.body.classList.add('bg-gray-100', 'text-gray-900');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-        }
-        
-        // Toggle between sorting by title or year
-        function toggleSort() {
-            sortBy = sortBy === 'title' ? 'year' : 'title';
-            
-            if (sortBy === 'title') {
-                sortToggle.innerHTML = '<i class="fas fa-sort-alpha-down"></i>';
-            } else {
-                sortToggle.innerHTML = '<i class="fas fa-sort-numeric-down"></i>';
-            }
-            
-            renderMovies();
-        }
-        
-        // Filter and sort movies
-        function getFilteredMovies() {
-            let filtered = [...movies];
-            
-            // Filter by category
-            if (currentCategory !== 'all') {
-                filtered = filtered.filter(movie => movie.category === currentCategory);
-            }
-            
-            // Filter by search term
-            const searchTerm = searchBar.value.toLowerCase();
-            if (searchTerm) {
-                filtered = filtered.filter(movie => 
-                    movie.title.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            // Sort
-            filtered.sort((a, b) => {
-                if (sortBy === 'title') {
-                    return a.title.localeCompare(b.title);
-                } else {
-                    return b.year - a.year; // Newest first
-                }
-            });
-            
-            return filtered;
-        }
-        
-        // Render movies to the DOM
-        function renderMovies() {
-            loadingElement.style.display = 'block';
-            container.innerHTML = '';
-            
-            // Simulate loading (remove in production)
-            setTimeout(() => {
-                const filteredMovies = getFilteredMovies();
-                
-                if (filteredMovies.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-full text-center py-10">
-                            <i class="fas fa-film text-5xl text-yellow-400 mb-4"></i>
-                            <h3 class="text-xl font-semibold">No movies found</h3>
-                            <p class="text-gray-400">Try adjusting your search or filter</p>
-                        </div>
-                    `;
-                } else {
-                    filteredMovies.forEach((movie, index) => {
-                        const div = document.createElement('div');
-                        div.className = 'fade-in';
-                        div.innerHTML = `
-                            <div class="movie-poster bg-gray-800 rounded-lg overflow-hidden shadow-lg h-full flex flex-col">
-                                <img src="${movie.image}" 
-                                     alt="${movie.title}" 
-                                     class="w-full h-64 md:h-80 object-cover">
-                                <div class="p-3 flex-grow">
-                                    <h3 class="font-bold text-yellow-400 truncate">${movie.title}</h3>
-                                    <div class="flex justify-between items-center mt-2">
-                                        <span class="text-sm text-gray-400">${movie.year}</span>
-                                        <span class="text-xs px-2 py-1 bg-yellow-500 text-black rounded-full">${movie.category.toUpperCase()}</span>
-                                    </div>
-                                </div>
-                                <button class="play-btn w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 px-4 transition">
-                                    <i class="fas fa-play mr-2"></i> Watch Now
-                                </button>
-                            </div>
-                        `;
-                        div.querySelector('.play-btn').addEventListener('click', () => {
-                            playVideo(movie.title, movie.video, index);
-                        });
-                        container.appendChild(div);
-                    });
-                }
-                
-                // Update movie count
-                movieCountElement.textContent = filteredMovies.length;
-                
-                loadingElement.style.display = 'none';
-            }, 300);
-        }
-        
-        // Initialize the app
-        init();
-});
-</script>
-
+  </div>
 
 </body>
 </html>
