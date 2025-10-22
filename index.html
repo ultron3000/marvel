@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Marvel Cinematic Universe | Ultimate Collection</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,82 +28,29 @@
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-    
-    body {
-      font-family: 'Bebas Neue', sans-serif;
-      background-color: #000;
-      color: #fff;
-      overflow-x: hidden;
-    }
-    
-    .marvel-font {
-      font-family: 'Bebas Neue', sans-serif;
-    }
-    
-    .movie-card {
-      transition: all 0.3s ease;
-      transform-style: preserve-3d;
-    }
-    
-    .movie-card:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 20px 30px rgba(237, 29, 36, 0.3);
-    }
-    
-    .movie-poster {
-      transition: all 0.5s ease;
-    }
-    
-    .movie-card:hover .movie-poster {
-      transform: scale(1.05);
-    }
-    
-    .search-input:focus {
-      box-shadow: 0 0 0 3px rgba(237, 29, 36, 0.5);
-    }
-    
-    .phase-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 10;
-    }
-    
-    .filter-btn.active {
-      background-color: #ED1D24;
-      color: white;
-    }
-    
-    .loading-spinner {
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .gradient-overlay {
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
-    }
-    
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-    
-    .scrollbar-hide {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    
-    @media (max-width: 640px) {
-      .mobile-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
+
+    body { font-family: 'Bebas Neue', sans-serif; background-color: #000; color: #fff; overflow-x: hidden; }
+    .marvel-font { font-family: 'Bebas Neue', sans-serif; }
+    .movie-card { transition: all 0.3s ease; transform-style: preserve-3d; cursor: pointer; }
+    .movie-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 30px rgba(237,29,36,0.3); }
+    .movie-poster { transition: all 0.5s ease; }
+    .movie-card:hover .movie-poster { transform: scale(1.05); }
+    .search-input:focus { box-shadow: 0 0 0 3px rgba(237,29,36,0.5); }
+    .phase-badge { position: absolute; top: 10px; right: 10px; z-index: 10; }
+    .filter-btn.active { background-color: #ED1D24; color: white; }
+    .loading-spinner { animation: spin 1s linear infinite; }
+    @keyframes spin { 0%{transform:rotate(0deg)}100%{transform:rotate(360deg)} }
+    .gradient-overlay { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%); }
+    .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .hidden { display: none; }
+    /* Modal specific */
+    #playback-modal .aspect-video { aspect-ratio: 16/9; }
+    #playerError { display: none; }
+    .quality-btn { cursor: pointer; }
   </style>
 </head>
 <body class="min-h-screen">
+
   <!-- Header -->
   <header class="bg-black sticky top-0 z-50 border-b border-marvel-red/20">
     <div class="container mx-auto px-4 py-4">
@@ -149,35 +96,16 @@
     <!-- Filters -->
     <div class="mb-8">
       <div class="flex flex-wrap gap-3 mb-6 scrollbar-hide overflow-x-auto pb-2">
-        <button class="filter-btn active px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="all">
-          All Movies
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase1">
-          Phase 1
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase2">
-          Phase 2
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase3">
-          Phase 3
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase4">
-          Phase 4
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase5">
-          Phase 5
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="avengers">
-          Avengers
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="spiderman">
-          Spider-Man
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="guardians">
-          Guardians
-        </button>
+        <button class="filter-btn active px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="all">All Movies</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase1">Phase 1</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase2">Phase 2</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase3">Phase 3</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase4">Phase 4</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="phase5">Phase 5</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="avengers">Avengers</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="spiderman">Spider-Man</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-marvel-dark text-marvel-gold border border-marvel-gold/30 hover:bg-marvel-red hover:border-marvel-red transition-colors" data-filter="guardians">Guardians</button>
       </div>
-      
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl text-marvel-gold marvel-font tracking-wider">Marvel Collection</h3>
         <div class="flex items-center space-x-2">
@@ -192,15 +120,49 @@
     </div>
 
     <!-- Movies Grid -->
-    <div id="movies-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-      <!-- Movies will be loaded here -->
-    </div>
+    <div id="movies-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
 
     <!-- Loading Spinner -->
-    <div id="loading-spinner" class="flex justify-center items-center py-12">
+    <div id="loading-spinner" class="flex justify-center items-center py-12 hidden">
       <div class="w-12 h-12 border-4 border-marvel-red border-t-transparent rounded-full loading-spinner"></div>
     </div>
   </main>
+
+  <!-- Modal Player -->
+  <div id="playback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90">
+    <div class="relative w-full max-w-4xl bg-gray-900 rounded-xl overflow-hidden p-4">
+      <button id="close-modal" class="absolute top-3 right-3 z-50 text-white hover:text-yellow-500 text-2xl transition">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="aspect-video">
+        <video id="modal-video" class="w-full h-full bg-black" controls playsinline></video>
+      </div>
+
+      <div id="qualityControls" class="flex justify-center mt-3"></div>
+      <div id="playerError" class="hidden bg-red-900 text-white p-2 rounded mt-2 text-center"></div>
+
+      <div class="flex justify-between mt-3">
+        <button id="prevBtn" class="px-3 py-1 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700">
+          <i class="fas fa-step-backward mr-1"></i> Prev
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="fullscreenBtn" class="px-3 py-1 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700">
+            <i class="fas fa-expand mr-1"></i> Fullscreen
+          </button>
+          <button id="muteBtn" class="px-3 py-1 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700">
+            <i class="fas fa-volume-up mr-1"></i> Mute
+          </button>
+        </div>
+        <button id="nextBtn" class="px-3 py-1 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700">
+          Next <i class="fas fa-step-forward ml-1"></i>
+        </button>
+      </div>
+
+      <h3 id="modal-title" class="text-xl font-bold text-yellow-400 mt-3"></h3>
+      <div class="text-center text-gray-400 text-sm mt-1">Keyboard: Space=Play/Pause, ←/→ seek, F=Fullscreen, N=Next, P=Prev, M=Mute</div>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="bg-black py-8 border-t border-marvel-red/20">
@@ -216,18 +178,10 @@
           <p class="text-marvel-gold/70 mt-2">The ultimate collection of Marvel movies</p>
         </div>
         <div class="flex space-x-6">
-          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors">
-            <i class="fab fa-facebook-f text-xl"></i>
-          </a>
-          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors">
-            <i class="fab fa-twitter text-xl"></i>
-          </a>
-          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors">
-            <i class="fab fa-instagram text-xl"></i>
-          </a>
-          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors">
-            <i class="fab fa-youtube text-xl"></i>
-          </a>
+          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors"><i class="fab fa-facebook-f text-xl"></i></a>
+          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors"><i class="fab fa-twitter text-xl"></i></a>
+          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors"><i class="fab fa-instagram text-xl"></i></a>
+          <a href="#" class="text-marvel-gold/70 hover:text-marvel-red transition-colors"><i class="fab fa-youtube text-xl"></i></a>
         </div>
       </div>
       <div class="mt-8 pt-6 border-t border-marvel-red/10 text-center text-marvel-gold/50 text-sm">
@@ -238,16 +192,11 @@
   </footer>
 
   <script>
-    
-    function isStream(url) {
-      return /\.(m3u8|txt)$/i.test(url);
-    }
-
-    // Marvel movie data with additional metadata
+    // --- Data (same as before; truncated for brevity here but left intact in your file) ---
     const movies = [
       { 
         title: "Iron Man", 
-        video: "https://sdqm.alenapark.sbs:443/v4/36/h5fah/index-f2-v1-a1.txt", 
+        video: "https://bxs5xkxkyi4y.stellarifydesign.cyou/7npihg0ee2yuu/hls3/01/00354/wkkitxki0iya_h/master.txt", 
         image: "https://i.pinimg.com/736x/9f/bf/d3/9fbfd3709ca02fedd3b0588712c1ae77.jpg",
         phase: "phase1",
         year: 2008,
@@ -625,7 +574,7 @@
       },
       { 
         title: "Marvel One-Shot: The Consultant", 
-        video: "https://spuc.griseldakro.sbs:443/v4/js/im8nu/index-f2-v1-a1.txt", 
+        video: "https://sg1.shegu.net/vip/p1/movie_mp4_h264/2011/3/8/32908/movie.32908.2011.720p.H264.20210111233212.mp4?KEY1=gywmUAaq1BDHwTm92wNt5w&KEY2=1761107724&KEY3=1082142&KEY4=world&KEY7=febbox_video_quality_list_v3&KEY8=1082142", 
         image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTou-v4biZcjGeCsRXUZW9GEP_Ox-t5lQguBQ&s",
         phase: "phase1",
         year: 2011,
@@ -661,7 +610,7 @@
       },
       { 
         title: "Marvel One-Shot: All Hail the King", 
-        video: "https://cdn-1.celestialodyssey.site/video-stream/ccfff5a3/playlist.m3u8", 
+        video: "https://sg1.shegu.net/vip/p1/movie_mp4_h264/2014/3/0/32910/movie.32910.2014.720p.H264.20210111231856.mp4?KEY1=QmsqmIHMGuBoHwejBtVm6g&KEY2=1761107796&KEY3=1080348&KEY4=world&KEY7=febbox_video_quality_list_v3&KEY8=1080348", 
         image: "https://m.media-amazon.com/images/M/MV5BOTZlNmY1ZTEtZjI4Zi00OWU3LTg4YjgtMTg2MzAxYTEyZjE5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
         phase: "phase2",
         year: 2014,
@@ -679,7 +628,7 @@
       }
     ];
 
-    // DOM Elements
+    // --- DOM Elements ---
     const moviesContainer = document.getElementById('movies-container');
     const searchInput = document.getElementById('search-input');
     const filterButtons = document.querySelectorAll('.filter-btn');
@@ -688,253 +637,346 @@
     const themeToggle = document.getElementById('theme-toggle');
     const viewToggle = document.getElementById('view-toggle');
 
-    // Current filter and sort state
+    // Modal elements
+    const modal = document.getElementById('playback-modal');
+    const modalVideo = document.getElementById('modal-video');
+    const modalTitle = document.getElementById('modal-title');
+    const qualityControls = document.getElementById('qualityControls');
+    const playerError = document.getElementById('playerError');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const muteBtn = document.getElementById('muteBtn');
+    const closeModalBtn = document.getElementById('close-modal');
+
+    // State
     let currentFilter = 'all';
     let currentSort = 'release';
-    let currentView = 'grid'; // 'grid' or 'list'
+    let currentView = 'grid';
+    let currentVideo = null; // { index: number (within filtered), movie: {} }
 
-    // Initialize the app
-    function init() {
-      renderMovies();
-      setupEventListeners();
+    // Helpers
+    function isStream(url) {
+      return /\.(m3u8|txt)$/i.test(url);
     }
 
-    // Render movies based on current filter and sort
-    function renderMovies() {
-      loadingSpinner.style.display = 'flex';
-      
-      // Filter movies
-      let filteredMovies = [...movies];
+    function isMP4(url) {
+      return /\.mp4(\?|$)/i.test(url);
+    }
+
+    function getFilteredMovies() {
+      let filtered = [...movies];
+
+      // Filter by phase / tag
       if (currentFilter !== 'all') {
-        filteredMovies = movies.filter(movie => {
-          if (currentFilter === 'phase1') return movie.phase === 'phase1';
-          if (currentFilter === 'phase2') return movie.phase === 'phase2';
-          if (currentFilter === 'phase3') return movie.phase === 'phase3';
-          if (currentFilter === 'phase4') return movie.phase === 'phase4';
-          if (currentFilter === 'phase5') return movie.phase === 'phase5';
-          if (currentFilter === 'avengers') return movie.tags.includes('avengers');
-          if (currentFilter === 'spiderman') return movie.tags.includes('spiderman');
-          if (currentFilter === 'guardians') return movie.tags.includes('guardians');
+        filtered = filtered.filter(m => {
+          if (currentFilter === 'phase1') return m.phase === 'phase1';
+          if (currentFilter === 'phase2') return m.phase === 'phase2';
+          if (currentFilter === 'phase3') return m.phase === 'phase3';
+          if (currentFilter === 'phase4') return m.phase === 'phase4';
+          if (currentFilter === 'phase5') return m.phase === 'phase5';
+          if (currentFilter === 'avengers') return m.tags && m.tags.includes('avengers');
+          if (currentFilter === 'spiderman') return m.tags && m.tags.includes('spiderman');
+          if (currentFilter === 'guardians') return m.tags && m.tags.includes('guardians');
           return true;
         });
       }
-      
-      // Sort movies
-      filteredMovies.sort((a, b) => {
-        if (currentSort === 'title') {
-          return a.title.localeCompare(b.title);
-        } else if (currentSort === 'rating') {
-          return b.rating - a.rating;
-        } else {
-          return a.year - b.year;
-        }
+
+      // Search filter
+      const searchTerm = (searchInput.value || '').toLowerCase().trim();
+      if (searchTerm) {
+        filtered = filtered.filter(m => m.title.toLowerCase().includes(searchTerm));
+      }
+
+      // Sort
+      filtered.sort((a,b) => {
+        if (currentSort === 'title') return a.title.localeCompare(b.title);
+        if (currentSort === 'rating') return (b.rating||0) - (a.rating||0);
+        return (a.year||0) - (b.year||0);
       });
-      
-      // Clear container
-      moviesContainer.innerHTML = '';
-      
-      // Render movies
-      filteredMovies.forEach(movie => {
-        const movieCard = createMovieCard(movie);
-        moviesContainer.appendChild(movieCard);
-      });
-      
-      loadingSpinner.style.display = 'none';
+
+      return filtered;
     }
 
-    // Create a movie card element
-    function createMovieCard(movie) {
+    // Render
+    function renderMovies() {
+      loadingSpinner.classList.remove('hidden');
+      moviesContainer.innerHTML = '';
+
+      const filtered = getFilteredMovies();
+      if (filtered.length === 0) {
+        moviesContainer.innerHTML = '<div class="col-span-full text-center py-10"><i class="fas fa-film text-5xl text-yellow-400 mb-4"></i><h3 class="text-xl font-semibold">No movies found</h3><p class="text-gray-400">Try adjusting your search or filter</p></div>';
+        loadingSpinner.classList.add('hidden');
+        return;
+      }
+
+      filtered.forEach((movie, idx) => {
+        const card = createMovieCard(movie, idx);
+        moviesContainer.appendChild(card);
+      });
+
+      loadingSpinner.classList.add('hidden');
+    }
+
+    function createMovieCard(movie, indexInFiltered) {
       const card = document.createElement('div');
-      card.className = `movie-card relative rounded-lg overflow-hidden shadow-lg bg-marvel-dark transition-all duration-300 ${currentView === 'grid' ? 'h-80' : 'h-40 flex'}`;
-      
-      // Phase badge
+      card.className = `movie-card relative rounded-lg overflow-hidden shadow-lg bg-marvel-dark transition-all duration-300 h-80`;
+
       let phaseText = '';
       if (movie.phase === 'phase1') phaseText = 'Phase 1';
       if (movie.phase === 'phase2') phaseText = 'Phase 2';
       if (movie.phase === 'phase3') phaseText = 'Phase 3';
       if (movie.phase === 'phase4') phaseText = 'Phase 4';
       if (movie.phase === 'phase5') phaseText = 'Phase 5';
-      
+
       // Rating stars
       let stars = '';
       if (movie.rating > 0) {
         const fullStars = Math.floor(movie.rating);
-        const hasHalfStar = movie.rating % 1 >= 0.5;
-        
-        for (let i = 0; i < fullStars; i++) {
-          stars += '<i class="fas fa-star text-marvel-gold"></i>';
-        }
-        
-        if (hasHalfStar) {
-          stars += '<i class="fas fa-star-half-alt text-marvel-gold"></i>';
-        }
-        
-        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-        for (let i = 0; i < emptyStars; i++) {
-          stars += '<i class="far fa-star text-marvel-gold"></i>';
-        }
+        const hasHalf = (movie.rating % 1) >= 0.5;
+        for (let i=0;i<fullStars;i++) stars += '<i class="fas fa-star text-marvel-gold"></i>';
+        if (hasHalf) stars += '<i class="fas fa-star-half-alt text-marvel-gold"></i>';
+        const empty = 5 - fullStars - (hasHalf?1:0);
+        for (let i=0;i<empty;i++) stars += '<i class="far fa-star text-marvel-gold"></i>';
       } else {
         stars = '<span class="text-marvel-gold/70">Not rated</span>';
       }
-      
+
       card.innerHTML = `
         <div class="absolute inset-0 gradient-overlay z-10"></div>
-        <img src="${movie.image}" alt="${movie.title}" 
-             class="movie-poster absolute inset-0 w-full h-full object-cover transition-transform duration-500">
-        
+        <img src="${movie.image || ''}" alt="${movie.title}" class="movie-poster absolute inset-0 w-full h-full object-cover transition-transform duration-500">
         ${phaseText ? `<div class="phase-badge bg-marvel-red text-white text-xs px-2 py-1 rounded-full">${phaseText}</div>` : ''}
-        
         <div class="absolute bottom-0 left-0 right-0 z-20 p-4 text-white">
           <h3 class="text-xl font-bold truncate">${movie.title}</h3>
           <div class="flex items-center justify-between mt-1">
-            <span class="text-sm text-marvel-gold">${movie.year}</span>
-            <div class="flex items-center space-x-1 text-sm">
-              ${stars}
-            </div>
+            <span class="text-sm text-marvel-gold">${movie.year || ''}</span>
+            <div class="flex items-center space-x-1 text-sm">${stars}</div>
           </div>
         </div>
       `;
-      
-      card.addEventListener('click', () => {
-        if (isStream(movie.video)) {
-          const url = `player.html?title=${encodeURIComponent(movie.title)}&video=${encodeURIComponent(movie.video)}`;
-          window.location.href = url;
-        } else {
-          openModal(movie);
+
+      // Click behavior: decide modal vs player.html
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        // When clicked, use index within the currently filtered list
+        const filtered = getFilteredMovies();
+        // Find this movie's index in filtered (by identity/title)
+        const idx = filtered.findIndex(m => m.title === movie.title && m.year === movie.year);
+        // If not found fallback to provided index
+        const indexToUse = idx >= 0 ? idx : indexInFiltered;
+        // If video is stream -> redirect to player.html
+        const video = movie.video;
+        if (typeof video === 'object') {
+          // if object includes m3u8/text keys, prefer redirect; otherwise if mp4 present use modal
+          const values = Object.values(video).join(' ');
+          if (isStream(values) && !isMP4(values)) {
+            const url = `player.html?title=${encodeURIComponent(movie.title)}&video=${encodeURIComponent(values)}`;
+            window.location.href = url;
+            return;
+          }
         }
+        // if video string
+        if (typeof video === 'string' && isStream(video) && !isMP4(video)) {
+          const url = `player.html?title=${encodeURIComponent(movie.title)}&video=${encodeURIComponent(video)}`;
+          window.location.href = url;
+          return;
+        }
+
+        // Otherwise open modal (mp4 or direct playable)
+        playInModal(filtered, indexToUse);
       });
-      
+
       return card;
     }
 
-    // Setup event listeners
-    function setupEventListeners() {
-      // Search input
-      searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const movieCards = document.querySelectorAll('.movie-card');
-        
-        movieCards.forEach(card => {
-          const title = card.querySelector('h3').textContent.toLowerCase();
-          card.style.display = title.includes(searchTerm) ? 'block' : 'none';
+    // Play modal functions
+    function playInModal(filteredArray, index) {
+      const movie = filteredArray[index];
+      if (!movie) return showError("Movie not available");
+
+      // Prepare quality controls if movie.video is object
+      qualityControls.innerHTML = '';
+      if (typeof movie.video === 'object') {
+        // movie.video = { low: '...', medium: '...', high: '...' }
+        const entries = Object.entries(movie.video);
+        entries.forEach(([quality, url]) => {
+          const btn = document.createElement('button');
+          btn.className = 'quality-btn px-3 py-1 mx-1 rounded bg-gray-700 hover:bg-gray-600 text-sm';
+          btn.dataset.quality = quality;
+          btn.dataset.url = url;
+          btn.innerText = quality.toUpperCase();
+          qualityControls.appendChild(btn);
         });
+      }
+
+      modalTitle.textContent = movie.title;
+      // Choose src: prefer high > medium > low if object
+      let src = '';
+      if (typeof movie.video === 'object') {
+        src = movie.video.high || movie.video.medium || movie.video.low || Object.values(movie.video)[0];
+      } else {
+        src = movie.video;
+      }
+
+      // set video src
+      modalVideo.pause();
+      modalVideo.src = src;
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      currentVideo = { index, movie };
+      // Try to autoplay; if blocked show friendly message
+      modalVideo.play().catch(err => {
+        // show small notice but don't block user
+        showError("Autoplay blocked — click play to start.");
       });
-      
-      // Filter buttons
-      filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          filterButtons.forEach(btn => btn.classList.remove('active'));
-          button.classList.add('active');
-          currentFilter = button.dataset.filter;
+
+      // update prev/next button enable/disable
+      updatePrevNextButtons();
+    }
+
+    function updatePrevNextButtons() {
+      const filtered = getFilteredMovies();
+      if (!currentVideo) { prevBtn.disabled = nextBtn.disabled = true; return; }
+      prevBtn.disabled = currentVideo.index <= 0;
+      nextBtn.disabled = currentVideo.index >= filtered.length - 1;
+    }
+
+    function showError(msg) {
+      playerError.textContent = msg;
+      playerError.classList.remove('hidden');
+      setTimeout(() => playerError.classList.add('hidden'), 4000);
+    }
+
+    // Event listeners for modal controls
+    closeModalBtn.addEventListener('click', closeModal);
+    prevBtn.addEventListener('click', playPrevious);
+    nextBtn.addEventListener('click', playNext);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    muteBtn.addEventListener('click', toggleMute);
+
+    // Quality selector click (event delegation)
+    qualityControls.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target.classList.contains('quality-btn')) {
+        const url = target.dataset.url;
+        const currentTime = modalVideo.currentTime || 0;
+        modalVideo.src = url;
+        modalVideo.currentTime = currentTime;
+        modalVideo.play().catch(() => showError("Please click play manually."));
+      }
+    });
+
+    // Keyboard shortcuts while modal open
+    document.addEventListener('keydown', (e) => {
+      if (modal.classList.contains('hidden')) return;
+      switch (e.key.toLowerCase()) {
+        case 'escape': closeModal(); break;
+        case ' ': e.preventDefault(); togglePlayPause(); break;
+        case 'arrowright': seek(10); break;
+        case 'arrowleft': seek(-10); break;
+        case 'f': toggleFullscreen(); break;
+        case 'm': toggleMute(); break;
+        case 'n': playNext(); break;
+        case 'p': playPrevious(); break;
+      }
+    });
+
+    modalVideo.addEventListener('error', () => {
+      showError("Failed to load video. It may be blocked or unavailable.");
+    });
+
+    function closeModal() {
+      modalVideo.pause();
+      modalVideo.src = '';
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      currentVideo = null;
+    }
+
+    function togglePlayPause() { modalVideo.paused ? modalVideo.play() : modalVideo.pause(); }
+    function seek(seconds) { modalVideo.currentTime = Math.max(0, (modalVideo.currentTime || 0) + seconds); }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        modalVideo.requestFullscreen?.().catch(err => showError("Fullscreen failed: " + err.message));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    function toggleMute() {
+      modalVideo.muted = !modalVideo.muted;
+      muteBtn.innerHTML = modalVideo.muted ? '<i class="fas fa-volume-mute mr-1"></i> Unmute' : '<i class="fas fa-volume-up mr-1"></i> Mute';
+    }
+
+    function playNext() {
+      const filtered = getFilteredMovies();
+      if (!currentVideo) return;
+      if (currentVideo.index < filtered.length - 1) {
+        playInModal(filtered, currentVideo.index + 1);
+      } else {
+        showError("No next video in this category.");
+      }
+    }
+    function playPrevious() {
+      const filtered = getFilteredMovies();
+      if (!currentVideo) return;
+      if (currentVideo.index > 0) {
+        playInModal(filtered, currentVideo.index - 1);
+      } else {
+        showError("No previous video in this category.");
+      }
+    }
+
+    // Setup UI listeners
+    function setupEventListeners() {
+      // Search
+      searchInput.addEventListener('input', () => renderMovies());
+
+      // Filters
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter || 'all';
           renderMovies();
         });
       });
-      
+
       // Sort select
       sortSelect.addEventListener('change', (e) => {
         currentSort = e.target.value;
         renderMovies();
       });
-      
+
       // Theme toggle
-      themeToggle.addEventListener('click', toggleTheme);
-      
-      // View toggle
-      viewToggle.addEventListener('click', toggleView);
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('bg-gray-100');
+        document.body.classList.toggle('bg-black');
+        const icon = themeToggle.querySelector('i');
+        if (icon.classList.contains('fa-moon')) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+        else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+      });
+
+      // View toggle (grid / list)
+      viewToggle.addEventListener('click', () => {
+        currentView = currentView === 'grid' ? 'list' : 'grid';
+        const icon = viewToggle.querySelector('i');
+        if (currentView === 'grid') { icon.classList.remove('fa-list'); icon.classList.add('fa-th-large'); }
+        else { icon.classList.remove('fa-th-large'); icon.classList.add('fa-list'); }
+        renderMovies();
+      });
+
+      // Close modal when clicking outside video area (optional UX)
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
     }
 
-    // Toggle between light and dark theme
-    function toggleTheme() {
-      document.body.classList.toggle('bg-gray-100');
-      document.body.classList.toggle('bg-black');
-      
-      const icon = themeToggle.querySelector('i');
-      if (icon.classList.contains('fa-moon')) {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-      } else {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
-      }
-    }
-
-    // Toggle between grid and list view
-    function toggleView() {
-      currentView = currentView === 'grid' ? 'list' : 'grid';
-      
-      const icon = viewToggle.querySelector('i');
-      if (currentView === 'grid') {
-        icon.classList.remove('fa-list');
-        icon.classList.add('fa-th-large');
-      } else {
-        icon.classList.remove('fa-th-large');
-        icon.classList.add('fa-list');
-      }
-      
-      renderMovies();
-    }
-
-    
-    function isStream(url) {
-      return /\.(m3u8|txt)$/i.test(url);
-    }
-
-    function openModal(movie) {
-      document.getElementById('modal-title').textContent = movie.title;
-      document.getElementById('modal-year').textContent = movie.year;
-      document.getElementById('modal-rating').textContent = movie.rating > 0 ? movie.rating : 'Not rated';
-      const video = document.getElementById('modal-video');
-      video.src = movie.video;
-
-      const modal = document.getElementById('playback-modal');
-      modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      video.play();
-    }
-
-    function closeModalHandler() {
-      const modal = document.getElementById('playback-modal');
-      const video = document.getElementById('modal-video');
-      modal.classList.add('hidden');
-      video.pause();
-      video.src = "";
-      document.body.style.overflow = '';
-    }
-
+    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
-      const closeModal = document.getElementById('close-modal');
-      if (closeModal) {
-        closeModal.addEventListener('click', closeModalHandler);
-      }
+      setupEventListeners();
+      renderMovies();
     });
 
-
-// Initialize the app when DOM is loaded
-    document.addEventListener('DOMContentLoaded', init);
   </script>
-
-  <!-- Modal Player -->
-  <div id="playback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90">
-    <div class="relative w-full max-w-4xl bg-gray-900 rounded-xl overflow-hidden">
-      <button id="close-modal" class="absolute top-4 right-4 z-50 text-white hover:text-yellow-500 text-2xl transition">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="aspect-w-16 aspect-h-9">
-        <video id="modal-video" class="w-full" controls></video>
-      </div>
-      <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
-          <div>
-            <h3 id="modal-title" class="text-2xl font-bold mb-1"></h3>
-            <div class="text-gray-400 text-sm">
-              <span><span id="modal-year"></span></span> • <span class="text-yellow-500">★ <span id="modal-rating"></span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </body>
 </html>
-
